@@ -3,6 +3,15 @@
         return new octoUtil.init();
     };
     
+    var lazy = [];
+    var imgNumber = 1;
+    var cleanLazy = function () {
+        lazy = Array.from(lazy);
+        lazy = lazy.filter(function (item) {
+            return item.getAttribute('data-src');
+        });
+    };
+    
     octoUtil.init = function () {
         
     };
@@ -31,6 +40,33 @@
                 }
             }
             return true;
+        },
+        
+        setLazy: function () {
+            lazy = document.querySelectorAll('img[data-src]');
+            console.log('Found ' + lazy.length + ' lazy images');
+        },
+        
+        lazyLoad: function () {
+            for (var i = 0; i < lazy.length; i++) {
+                if (this.isInViewPort(lazy[i])) {
+                    lazy[i].setAttribute('src', lazy[i].getAttribute('data-src'));
+                    lazy[i].removeAttribute('data-src');
+                    console.log('loading image ' + imgNumber);
+                    imgNumber++;
+                }
+            }
+            cleanLazy();
+        },
+        
+        isInViewPort: function (item) {
+            var rect = item.getBoundingClientRect();
+            return (
+                rect.bottom >= 0 && 
+                rect.right >= 0 && 
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) && 
+                rect.left <= (window.innerWidth || document.documentElement.clientWidth)
+             );
         }
     };
     
